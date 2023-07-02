@@ -1,9 +1,6 @@
 <template>
-    <div>
-        一级路由 主页
-    </div>
+  <div>一级路由 主页</div>
 </template>
-
 
 <script setup lang="ts">
 //注释发送请求用户信息：路由守卫发送请求获取用户信息
@@ -15,5 +12,4 @@
 // onMounted(() => {
 //     userStore.userInfo();
 // })
-
 </script>

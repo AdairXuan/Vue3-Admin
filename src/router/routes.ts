@@ -9,7 +9,7 @@ export const routerList = [
     meta: {
       title: '登录',
       hidden: true,
-    }
+    },
   },
   {
     //主页
@@ -28,12 +28,12 @@ export const routerList = [
         path: '/home',
         component: () => import('@/views/home/index.vue'),
         meta: {
-          title:'主页',
+          title: '主页',
           icon: 'HomeFilled',
-          tBar:true,
-        }
-      }
-    ]
+          tBar: true,
+        },
+      },
+    ],
   },
   {
     path: '/screen',
@@ -43,10 +43,10 @@ export const routerList = [
       title: '数字化BI',
       icon: 'TrendCharts',
       hidden: false,
-    }
+    },
   },
   {
-    path:"/acl",
+    path: '/acl',
     component: () => import('@/layout/index.vue'),
     name: 'acl',
     redirect: '/acl/user',
@@ -57,7 +57,7 @@ export const routerList = [
     },
     children: [
       {
-        path:'/acl/user',
+        path: '/acl/user',
         component: () => import('@/views/acl/user/index.vue'),
         name: 'user',
         meta: {
@@ -74,7 +74,7 @@ export const routerList = [
           title: '角色管理',
           icon: 'Avatar',
           hidden: false,
-        }
+        },
       },
       {
         path: '/acl/permission',
@@ -84,10 +84,9 @@ export const routerList = [
           title: '权限管理',
           icon: 'Operation',
           hidden: false,
-        }
-      }
-    ]
-
+        },
+      },
+    ],
   },
   {
     path: '/product',
@@ -108,17 +107,17 @@ export const routerList = [
           title: '品牌管理',
           icon: 'ShoppingCart',
           hidden: false,
-        }
+        },
       },
       {
         path: '/product/attr',
         name: 'attr',
         component: () => import('@/views/product/attr/index.vue'),
         meta: {
-          title:'属性管理',
+          title: '属性管理',
           icon: 'Coin',
           hidden: false,
-        }
+        },
       },
       {
         path: '/product/spu',
@@ -128,7 +127,7 @@ export const routerList = [
           title: 'SPU管理',
           icon: 'HelpFilled',
           hidden: false,
-        }
+        },
       },
       {
         path: '/product/sku',
@@ -138,11 +137,9 @@ export const routerList = [
           title: 'SKU管理',
           icon: 'HelpFilled',
           hidden: false,
-        }
+        },
       },
-      
-    ]
-
+    ],
   },
   {
     path: '/404',
@@ -150,7 +147,7 @@ export const routerList = [
     name: '404',
     meta: {
       title: '任意路由匹配',
-      hidden: true
+      hidden: true,
     },
   },
   {
@@ -160,7 +157,7 @@ export const routerList = [
     name: 'Any',
     meta: {
       title: '任意路由匹配',
-      hidden: true
+      hidden: true,
     },
   },
 ]

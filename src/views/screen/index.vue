@@ -1,3 +1,3 @@
 <template>
-    <div>Screen</div>
+  <div>Screen</div>
 </template>

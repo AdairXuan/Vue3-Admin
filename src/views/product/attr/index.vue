@@ -1,5 +1,3 @@
 <template>
-    <div>
-        attr
-    </div>
+  <div>attr</div>
 </template>

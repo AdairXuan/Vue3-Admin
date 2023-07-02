@@ -1,12 +1,17 @@
 //创建用户相关小仓库
 import { defineStore } from 'pinia'
 //引入数据类型
-import type { loginFormData, loginResponseData } from '@/api/user/type'
+// import type { loginFormData, loginResponseData } from '@/api/user/type'
 //引入接口
-import { reqLogin, getUserInfo } from '@/api/user'
+import { reqLogin, getUserInfo, reqLogout } from '@/api/user'
 import { UserState } from './types/type'
 import { SET_TOKEN, GET_TOKEN, DEL_TOKEN } from '@/utils/token'
 import { routerList } from '@/router/routes' //引入路由
+import {
+  loginFormData,
+  loginResponseData,
+  userInfoResponseData,
+} from '@/api/user/type'
 
 //创建用户小仓库
 const useUserStore = defineStore('User', {
@@ -30,33 +35,40 @@ const useUserStore = defineStore('User', {
       if (result.code == 200) {
         console.log(result)
         //由于pinial|vuex存储数据其实利用js对象
-        this.token = result.data.token as string
+        this.token = result.data as string
         //本地存储持久化存储
-        SET_TOKEN(result.data.token as string)
+        SET_TOKEN(result.data as string)
         return 'ok'
       } else {
-        return Promise.reject(new Error(result.data.message))
+        // return Promise.reject(new Error(result.data.message))
+        return Promise.reject(new Error(result.message))
       }
     },
-    async userInfo(){
+    async userInfo() {
       //获取用户信息进行存储仓库中[用户头像、名称]
-      let result = await getUserInfo();
-      console.log(result);
-      if(result.code == 200) {
-        this.username = result.data.checkUser.username as string;
-        this.avatar = result.data.checkUser.avatar;
-        return 'ok';
+      let result: userInfoResponseData = await getUserInfo()
+      console.log(result)
+      if (result.code == 200) {
+        this.username = result.data.name as string
+        this.avatar = result.data.avatar
+        return 'ok'
       } else {
-        return Promise.reject('获取用户信息失败');
+        return Promise.reject(new Error(result.message))
       }
     },
     async userLogout() {
       //TODO server interface
-      this.token = '';
-      this.username = '';
-      this.avatar = '';
-      DEL_TOKEN();
-    }
+      let result: any = await reqLogout()
+      if (result.code == 200) {
+        this.token = ''
+        this.username = ''
+        this.avatar = ''
+        DEL_TOKEN()
+        return 'ok'
+      } else {
+        return Promise.reject(new Error(result.message))
+      }
+    },
   },
   getters: {},
 })

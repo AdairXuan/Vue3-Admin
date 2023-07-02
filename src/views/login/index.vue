@@ -5,7 +5,12 @@
       <el-col :span="12" :xs="0"></el-col>
       <el-col :span="12" :xs="24">
         <!-- 添加model绑定数据对象，添加rules对象进行数据校验 -->
-        <el-form class="login_form" :model="loginForm" :rules="rules" ref="loginFormRef">
+        <el-form
+          class="login_form"
+          :model="loginForm"
+          :rules="rules"
+          ref="loginFormRef"
+        >
           <h1>Hello</h1>
           <h2>Welcome To My System</h2>
           <el-form-item prop="username">
@@ -45,20 +50,21 @@ import { User, Lock } from '@element-plus/icons-vue'
 import { reactive, ref } from 'vue'
 import useUserStore from '@/store/modules/user' //引入用户仓库
 import { ElNotification } from 'element-plus' //引入Element消息通知
-import { useRouter,useRoute } from 'vue-router'
-import type { loginFormData } from '@/api/user/type'
+import { useRouter, useRoute } from 'vue-router'
+// import type { loginFormData } from '@/api/user/type'
 import { getTime } from '@/utils/timeUtils'
 
 const useStore = useUserStore()
 //定义变量控制按钮加载效果
 let loading = ref(false)
-const loginForm: loginFormData = reactive({
+const loginForm: any = reactive({
   username: 'admin',
-  password: '111111',
+  password: 'atguigu123',
+  verifyCode: '1234',
 })
 //获取路由对象
 const $router = useRouter()
-const $route = useRoute();
+const $route = useRoute()
 const loginFormRef = ref()
 
 //自定义表单校验函数
@@ -71,21 +77,20 @@ const validatorUserName = (rule: any, value: any, callback: any) => {
   //函数:如果符合条件callBack放行通过即为
   //如果不符合条件callBack方法,注入错误提示信息
   if (value.length >= 5) {
-    callback();
+    callback()
   } else {
-    callback(new Error('账号长度至少五位'));
+    callback(new Error('账号长度至少五位'))
   }
 }
 
 //密码自定义表单校验
 const validatorPassword = (rule: any, value: any, callback: any) => {
   if (value.length >= 6) {
-    callback();
+    callback()
   } else {
-    callback(new Error('密码长度至少六位'));
+    callback(new Error('密码长度至少六位'))
   }
 }
-
 
 const login = async () => {
   loading.value = true
@@ -95,14 +100,13 @@ const login = async () => {
   //登陆失败-》提示错误
   try {
     //校验表单
-    await loginFormRef.value.validate();
-    
+    await loginFormRef.value.validate()
 
     await useStore.userLogin(loginForm)
     //编程式导航跳转到展示数据首页
     //判断是否有query参数，有就使用query跳转
-    let redirectPath:string = $route.query.redirect as string;
-    $router.push({path: redirectPath || '/'})
+    let redirectPath: string = $route.query.redirect as string
+    $router.push({ path: redirectPath || '/' })
     ElNotification({
       type: 'success',
       message: 'Login successfully',
@@ -110,37 +114,35 @@ const login = async () => {
     })
     loading.value = false
   } catch (error) {
-    let errorMessage = ErrorMessageGetting(error);
+    let errorMessage = ErrorMessageGetting(error)
     //登录失败提示
     ElNotification({
       type: 'error',
-      message: errorMessage =="" ? (error as Error).message : errorMessage,
+      message: errorMessage == '' ? (error as Error).message : errorMessage,
     })
     loading.value = false
   }
 }
 
-const ErrorMessageGetting = (error : any):string => {
-  let message = "";
-  if(error && error.username && error.username.length > 0) {
-    message+= error.username[0].message;
+const ErrorMessageGetting = (error: any): string => {
+  let message = ''
+  if (error && error.username && error.username.length > 0) {
+    message += error.username[0].message
   }
-  if(message != "")
-    return message;
-  if(error && error.password && error.password.length > 0){
-    message += error.password[0].message;
+  if (message != '') return message
+  if (error && error.password && error.password.length > 0) {
+    message += error.password[0].message
   }
 
-  return message;
-
-};
+  return message
+}
 
 // 定义表达需要校验的对象
 //规则对象属性
 /**
  *  required 是否必须校验
  *  message 校验提示信息
- *  trigger 什么时候校验 blur 失去焦点时候校验，change，值改变时校验 
+ *  trigger 什么时候校验 blur 失去焦点时候校验，change，值改变时校验
  *  min 最小多少位字符
  *  max 最大多少位字符
  */
@@ -160,8 +162,8 @@ const rules = {
     // },
     {
       trigger: 'blur',
-      validator: validatorUserName
-    }
+      validator: validatorUserName,
+    },
   ],
   password: [
     // {
@@ -171,8 +173,8 @@ const rules = {
     // },
     {
       trigger: 'blur',
-      validator: validatorPassword
-    }
+      validator: validatorPassword,
+    },
   ],
 }
 </script>

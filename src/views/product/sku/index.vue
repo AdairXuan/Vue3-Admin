@@ -1,3 +1,3 @@
 <template>
-    <div>sku</div>
+  <div>sku</div>
 </template>

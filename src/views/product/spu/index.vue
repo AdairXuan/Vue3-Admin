@@ -1,3 +1,3 @@
 <template>
-    <div>spu</div>
+  <div>spu</div>
 </template>

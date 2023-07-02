@@ -3,12 +3,10 @@ export const SET_TOKEN = (token: string) => {
 }
 
 //本地存储获取数据
-export const GET_TOKEN = () :string => {
-    return localStorage.getItem('token') as string
+export const GET_TOKEN = (): string => {
+  return localStorage.getItem('token') as string
 }
 
-
-export const DEL_TOKEN = () :void => {
-  return localStorage.removeItem('token');
+export const DEL_TOKEN = (): void => {
+  return localStorage.removeItem('token')
 }
-

@@ -12,7 +12,7 @@ import Left from './left/index.vue'
 
 <script lang="ts">
 export default {
-    name: 'Tabbar',
+  name: 'Tabbar',
 }
 </script>
 
@@ -28,7 +28,6 @@ export default {
     display: flex;
     align-items: center;
     margin-left: 20px;
-   
   }
   .tabbar_right {
     display: flex;

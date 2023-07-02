@@ -1,3 +1,3 @@
 <template>
-    <div>trademark</div>
+  <div>trademark</div>
 </template>

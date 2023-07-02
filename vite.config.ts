@@ -1,13 +1,13 @@
-import { defineConfig,UserConfigExport, ConfigEnv,loadEnv } from 'vite'
-import { viteMockServe, } from 'vite-plugin-mock'
+import { defineConfig, UserConfigExport, ConfigEnv, loadEnv } from 'vite'
+import { viteMockServe } from 'vite-plugin-mock'
 import vue from '@vitejs/plugin-vue'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import path from 'path'
-
-
+import dns from 'dns'
+dns.setDefaultResultOrder('verbatim')
 // https://vitejs.dev/config/
-export default defineConfig(({ command,mode }) => {
-  let env = loadEnv(mode,process.cwd());
+export default defineConfig(({ command, mode }) => {
+  let env = loadEnv(mode, process.cwd(), '')
   return {
     plugins: [
       vue(),
@@ -17,9 +17,9 @@ export default defineConfig(({ command,mode }) => {
         // Specify symbolId format
         symbolId: 'icon-[dir]-[name]',
       }),
-      viteMockServe({
-        localEnabled: command === 'serve',
-      }),
+      // viteMockServe({
+      //   localEnabled: command === 'serve',
+      // }),
     ],
     resolve: {
       alias: {
@@ -30,21 +30,22 @@ export default defineConfig(({ command,mode }) => {
       preprocessorOptions: {
         scss: {
           javascriptEnabled: true,
-          additionalData: '@import "./src/style/variable.scss";'
-        }
-      }
+          additionalData: '@import "./src/style/variable.scss";',
+        },
+      },
     },
+    //代理跨域
     server: {
       proxy: {
-        [env.VITE_APP_BASE_API]:{
-          //服务器地址
+        [env.VITE_APP_BASE_API]: {
+          //获取数据的服务器地址设置
           target: env.VITE_SERVE,
           //需要代理跨域
           changeOrigin: true,
           //路径重写
-          rewrite: (path) => path.replace(/^\/api/,''),
-        }
-      }
-    }
+          rewrite: (path) => path.replace(/^\/api/, ''),
+        },
+      },
+    },
   }
 })
