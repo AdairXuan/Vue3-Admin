@@ -1,25 +1,25 @@
 export interface ResponseData {
-    code: number;
-    message: string,
-    ok: boolean;
+  code: number
+  message: string
+  ok: boolean
 }
 
 //品牌数据
 export interface TradeMark {
-    id?: number;
-    tmName: string;
-    logoUrl: string;
+  id?: number
+  tmName: string
+  logoUrl: string
 }
 
-export type Records = TradeMark[];
+export type Records = TradeMark[]
 
 export interface TradeMarkResponseData extends ResponseData {
-    data: {
-        records: Records;
-        total: number;
-        size: number;
-        current: number;
-        searchCount: number;
-        pages: number;
-    }
+  data: {
+    records: Records
+    total: number
+    size: number
+    current: number
+    searchCount: number
+    pages: number
+  }
 }
