@@ -33,7 +33,7 @@
               type="primary"
               size="small"
               icon="Edit"
-              @click="EditBrandBtn"
+              @click="EditBrandBtn(row)"
             ></el-button>
             <el-button
               type="primary"
@@ -64,20 +64,32 @@
     </el-card>
 
     <!-- 新增品牌对话框 -->
-    <el-dialog v-model="addBrandVisible" title="添加品牌">
-      <el-form>
-        <el-form-item label="品牌名称" label-width="100px">
-          <el-input type="text" placeholder="请输入您的品牌"></el-input>
+    <el-dialog
+      v-model="addBrandVisible"
+      :title="trademarkParams.id ? '修改品牌' : '新增品牌'"
+    >
+      <el-form :model="trademarkParams" :rules="rules" ref="formRef" >
+        <el-form-item label="品牌名称" label-width="100px" prop="tmName">
+          <el-input
+            type="text"
+            placeholder="请输入您的品牌"
+            v-model="trademarkParams.tmName"
+          ></el-input>
         </el-form-item>
-        <el-form-item label="品牌LOGO" label-width="100px">
+        <el-form-item label="品牌LOGO" label-width="100px" prop="logoUrl">
+          <!-- action 上传图片地址 路径加上/api/代理服务器不发送这次post请求-->
           <el-upload
             class="avatar-uploader"
-            action=""
+            action="/api/admin/product/fileUpload"
             :show-file-list="false"
             :on-success="handleAvatarSuccess"
             :before-upload="beforeAvatarUpload"
           >
-            <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+            <img
+              v-if="trademarkParams.logoUrl"
+              :src="trademarkParams.logoUrl"
+              class="avatar"
+            />
             <el-icon v-else class="avatar-uploader-icon">
               <Plus />
             </el-icon>
@@ -86,17 +98,38 @@
       </el-form>
 
       <template #footer>
-        <el-button type="primary" size="default" @click="CancelBtn">取消</el-button>
-        <el-button type="primary" size="default" @click="ConfirmBtn">确定</el-button>
+        <el-button type="primary" size="default" @click="CancelBtn">
+          取消
+        </el-button>
+        <el-button type="primary" size="default" @click="ConfirmBtn">
+          确定
+        </el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { reqHosTrademark } from '@/api/product/trademark'
-import { TradeMarkResponseData, Records } from '@/api/product/trademark/type'
+import { ref, reactive, onMounted } from 'vue'
+import {
+  reqHosTrademark,
+  reqAddOrUpdateTrademark,
+} from '@/api/product/trademark'
+import {
+  TradeMarkResponseData,
+  Records,
+  TradeMark,
+} from '@/api/product/trademark/type'
+import type { UploadProps } from 'element-plus'
+import { ElMessage } from 'element-plus'
+
+//定义边编辑页面数据对象
+const trademarkParams = reactive<TradeMark>({
+  tmName: '',
+  logoUrl: '',
+})
+//获取el-form组件实例
+const formRef = ref();
 
 const addBrandVisible = ref<boolean>(false)
 //当数据前页
@@ -140,11 +173,19 @@ const SizeChange = () => {
 
 //Add BrandBtn
 const addBrandBtn = () => {
+  trademarkParams.id = 0;
+  trademarkParams.logoUrl = '';
+  trademarkParams.tmName  = '';
   addBrandVisible.value = true
+  formRef.value.clearValidate('logoUrl');
 }
 
 // Edit BrandBtn
-const EditBrandBtn = () => {}
+const EditBrandBtn = (row: TradeMark) => {
+
+  addBrandVisible.value = true;
+  Object.assign(trademarkParams,row);
+}
 
 // Del Btn Click
 const DelBrandBtn = () => {}
@@ -155,12 +196,97 @@ const CancelBtn = () => {
 }
 
 // Confirm Click
-const ConfirmBtn = () => {
-  addBrandVisible.value = false;
+const ConfirmBtn = async () => {
+
+  await  formRef.value.validate();
+
+  let result: any = reqAddOrUpdateTrademark(trademarkParams)
+  if (result.code == 200) {
+    addBrandVisible.value = false
+    //弹出提示信息
+    ElMessage({
+      type: 'success',
+      message: trademarkParams.id ? '修改品牌成功' : '添加品牌成功',
+    })
+    getHasTrademark(trademarkParams.id?pageNo.value:1)
+  } else {
+    ElMessage({
+      type: 'error',
+      message: trademarkParams.id ? '修改品牌失败' : '添加品牌失败',
+    })
+  }
 }
 
+const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
+  if (
+    rawFile.type == 'image/png' ||
+    rawFile.type == 'image/jpeg' ||
+    rawFile.type == 'image/gif'
+  ) {
+    if (rawFile.size / 1024 / 1024 < 4) {
+      return true
+    } else {
+      ElMessage({
+        type: 'error',
+        message: '上传文件不能超过4M',
+      })
+      return false
+    }
+  } else {
+    ElMessage({
+      type: 'error',
+      message: '上传格式务必PNG|JPG|GIF',
+    })
+    return false
+  }
+}
 
+const handleAvatarSuccess: UploadProps['onSuccess'] = (
+  response,
+  uploadFile,
+) => {
+  // response:上传图片服务器返回的数据
+  // uploadFile也是服务器返回数据，包含图片信息
+  trademarkParams.logoUrl = response.data;
+  formRef.value.clearValidate('logoUrl');
+}
 
+const validatorTmName = (rule:any, value:any, callBack:any) => {
+  if(value.trim().length >= 2)
+  {
+    callBack();
+  }else
+  {
+    callBack(new Error('品牌名称需要大于等于两位'))
+  }
+}
+
+const validatorLogoUrl = (rule:any, value:any, callBack:any) => {
+  if(value) {
+    callBack();
+  } else {
+    callBack(new Error('请上传LOGO图片'))
+  }
+}
+
+const rules = {
+  tmName: [
+  {
+      //字段必须输入
+      required: true,
+      //何时校验
+      trigger: 'blur',
+      validator: validatorTmName,
+    },
+  ],
+  logoUrl: [
+    {
+      required: true,
+      trigger: 'change',
+      validator: validatorLogoUrl,
+    }
+  ]
+}
 </script>
 
 <style scoped>
